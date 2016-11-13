@@ -3,17 +3,21 @@ var loginuser = function loginuser(req, res){
     var parameters = {};
     var error = {};
     error.status = false;
-    parameters = req.query;
-    console.log(parameters.username);
-    if(parameters.username == undefined || parameters.username ==''){
+    var parameters = {};
+    if(req.query.username == undefined || parameters.username ==''){
         error.status = true;
         error.msg = 'username is requires';
-    }else if(parameters.password == undefined || parameters.password ==''){
+    }else {
+        parameters.username = req.query.username;
+    }
+    if(req.query.password == undefined || parameters.password ==''){
         error.status = true;
         error.msg = 'password is requires';        
+    }else{
+        parameters.password = req.query.password;
     }
     if(error.status == false){
-        userlib.getUserDetail(req.query, function(result){
+        userlib.getUserDetail(parameters, function(result){
             sendResponse(result, res);
         });    
     } else{

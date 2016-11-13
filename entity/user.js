@@ -1,4 +1,4 @@
-var userMysqlDb = require('../db/mysql');
+var mysqlDb = require('../db/mysql');
 /*var getUserDetail = function(data, cb){
     var dbo = global.db.getDbo();
     var usercollection = dbo.collection('users');
@@ -32,7 +32,7 @@ var getUserDetail = function(data, cb) {
     query += 'select * from user_master where username=? AND password=?';
     queryData[identifiers++] = data.username;
     queryData[identifiers++] = data.password;
-    userMysqlDb.dbQuery(query, queryData, function(result){
+    mysqlDb.dbQuery(query, queryData, function(result){
         var response = {};
         response.status = false;
         if(result.length){
