@@ -15,6 +15,25 @@ module.exports.getcountrylist = function getcountrylist(req, res){
         sendResponse(error, res);
     }
 }
+module.exports.getstatelist = function getstatelist(req, res){
+    var parameters = {};
+    var error = {};
+    error.status = false;
+    var parameters = {};
+    if(req.query.country_id!=undefined && req.query.country_id!=''){
+        parameters.country_id = req.query.country_id;
+    }else if(req.query.state_id!=undefined && req.query.state_id!=''){
+        parameters.state_id = req.query.state_id;
+    }
+    if(error.status == false){
+        companylib.getStateList(parameters, function(result){
+            sendResponse(result, res);
+        });    
+    } else{
+        error.status = false;
+        sendResponse(error, res);
+    }
+}
 function sendResponse($data, res){
     res.send($data);
 }
