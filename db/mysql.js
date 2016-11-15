@@ -11,7 +11,7 @@ var dbQuery = function dbQuery(query, indetifiers, cb){
             console.log(err);
             return;
         }
-        console.log(query);
+        console.log(mysql.format(query, indetifiers));
         connection.query(query, indetifiers, function (err, rows) {
             connection.release();
             if (err) {
