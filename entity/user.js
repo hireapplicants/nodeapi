@@ -44,4 +44,36 @@ var getUserDetail = function(data, cb) {
         }
     });
 }
+module.exports.addCompanyUsers = function(parameters, roleDetail, cb){
+    var query = '';
+    var queryData = parameters;
+    console.log(queryData);
+    query += 'INSERT INTO user_master set ?';
+    mysqlDb.dbQuery(query, queryData, function(result){
+        var response = {};
+        response.status = false;
+        if(result.insertId != undefined && result.insertId>0){
+            roleDetail.user_id = result.insertId;
+            addRole(roleDetail, cb);
+        }else{
+            cb(response);
+        }   
+    });    
+}
+function addRole(parameters, cb){
+    var query = '';
+    var queryData = parameters;
+    query += 'INSERT INTO user_role_mapping set ?';
+    mysqlDb.dbQuery(query, queryData, function(result){
+        var response = {};
+        response.status = false;
+        if(result.insertId != undefined && result.insertId>0){
+            response.status = true;
+            response.data = result;
+            cb(response);
+        }else{
+            cb(response);
+        }   
+    });    
+}
 module.exports.getUserDetail = getUserDetail;

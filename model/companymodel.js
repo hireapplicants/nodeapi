@@ -9,3 +9,13 @@ module.exports.getStateList = function getStateList(data, cb){
         cb(result);
     });
 };
+module.exports.priceSave = function priceSave(data, cb){
+    companyEntity.priceSave(data, function(result){
+        cb(result);
+    });
+};
+module.exports.addCompany = function addCompany(data, cb){
+    companyEntity.addCompany(data, function(result){
+        cb(result);
+    });
+};

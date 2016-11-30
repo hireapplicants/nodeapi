@@ -9,4 +9,9 @@ module.exports.saveNewUser = function(data, cb){
         cb(result);
     });
 }
+module.exports.addCompanyUsers = function(data, cb){
+    userEntity.addCompanyUsers(data, function(result){
+        cb(result);
+    });
+}
 module.exports.getUserDetail = getUserDetail;

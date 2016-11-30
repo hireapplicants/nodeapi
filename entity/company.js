@@ -1,4 +1,5 @@
 var mysqlDb = require('../db/mysql');
+var userEntity = require('./user');
 module.exports.getCountryList = function(parameters, cb) {
     var query = '';
     var identifiers = 0;
@@ -43,6 +44,42 @@ module.exports.getStateList = function(parameters, cb) {
             response.status = true;
             response.data = result;
             cb(response);
+        }else{
+            cb(response);
+        }
+    });
+}
+module.exports.priceSave = function(parameters, cb) {
+    var query = '';
+    var queryData = parameters;
+    console.log(queryData);
+    query += 'INSERT INTO service_price_master set ?';
+    mysqlDb.dbQuery(query, queryData, function(result){
+        var response = {};
+        console.log(result);
+        response.status = false;
+        if(result.insertId){
+            response.status = true;
+            response.data = result;
+            cb(response);
+        }else{
+            cb(response);
+        }
+    });
+}
+module.exports.addCompany = function(parameters, cb) {
+    var query = '';
+    var queryData = parameters.company;
+    console.log(queryData);
+    query += 'INSERT INTO company_master set ?';
+    mysqlDb.dbQuery(query, queryData, function(result){
+        var response = {};
+        response.status = false;
+        if(result.insertId != undefined && result.insertId>0){
+            parameters.userDetail.company_id = result.insertId;
+            parameters.roleDetail = {};
+            parameters.roleDetail.role_id = 2;
+            userEntity.addCompanyUsers(parameters.userDetail, parameters.roleDetail, cb);
         }else{
             cb(response);
         }
