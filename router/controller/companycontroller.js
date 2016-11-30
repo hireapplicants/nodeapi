@@ -110,3 +110,24 @@ module.exports.addcompany = function addcompany(req, res){
         sendResponse(error, res);
     }    
 }
+module.exports.getcompanylist = function getcompanylist(req, res){
+    var parameters = {};
+    var error = {};
+    error.status = false;
+    if(req.query.company_id!=undefined && req.query.company_id>0){
+        parameters.company_id = req.query.company_id;
+    }
+    if(req.query.email!=undefined && req.query.email!=''){
+        parameters.email = req.query.email;
+    }    
+    if(req.query.status!=undefined && req.query.status!=''){
+        parameters.status = req.query.status;
+    }    
+    if(error.status == false){
+        companylib.getCompanyList(parameters, function(result){
+            sendResponse(result, res);
+        });    
+    } else{
+        sendResponse(error, res);
+    }
+}

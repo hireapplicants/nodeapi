@@ -19,3 +19,8 @@ module.exports.addCompany = function addCompany(data, cb){
         cb(result);
     });
 };
+module.exports.getCompanyList = function getCompanyList(data, cb){
+    companyEntity.getCompanyList(data, function(result){
+        cb(result);
+    });
+};

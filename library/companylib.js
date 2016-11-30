@@ -19,3 +19,8 @@ module.exports.addCompany = function(data, cb){
         cb(stateList);
     });
 };
+module.exports.getCompanyList = function(data, cb){
+    companyModel.getCompanyList(data, function(companyList){
+        cb(companyList);
+    });
+}

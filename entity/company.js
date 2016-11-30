@@ -85,3 +85,39 @@ module.exports.addCompany = function(parameters, cb) {
         }
     });
 }
+
+module.exports.getCompanyList = function(parameters, cb) {
+    var query = '';
+    var identifiers = 0;
+    var queryData = [];
+    var columns = ['company_master.id', 'company_master.company_name', 'company_master.company_url', 'company_master.address', 'company_master.zip_code','company_master.type', 'company_master.contact_via', 'company_master.time_to_contact', 'company_master.status', 'user_master.email', 'user_master.phone_number', 'user_master.alt_phone_number', 'country_master.country_name', 'state_master.state_name'];
+    query += 'select ?? from company_master ';
+    queryData[identifiers++] = columns;
+    query += 'LEFT JOIN user_master ON company_master.id=user_master.company_id ';
+    query += 'LEFT JOIN country_master ON company_master.country_id=country_master.id ';
+    query += 'LEFT JOIN state_master ON company_master.state_id=state_master.id ';
+    if(parameters.company_id != undefined){
+        query += ' Where company_master.id=?';
+        queryData[identifiers++] = parameters.company_id;
+    }    
+    if(parameters.status != undefined){
+        if(parameters.company_id != undefined){
+            query += ' AND company_master.status=?';
+            queryData[identifiers++] = parameters.status;
+        }else{
+            query += ' WHERE company_master.status=?';
+            queryData[identifiers++] = parameters.status;            
+        }
+    }    
+    mysqlDb.dbQuery(query, queryData, function(result){
+        var response = {};
+        response.status = false;
+        if(result.length){
+            response.status = true;
+            response.data = result;
+            cb(response);
+        }else{
+            cb(response);
+        }
+    });
+}
