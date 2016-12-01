@@ -1,4 +1,5 @@
 var companylib = require('../../library/companylib');
+var cryptoJs = require('crypto-js');
 module.exports.getcountrylist = function getcountrylist(req, res){
     var parameters = {};
     var error = {};
@@ -102,6 +103,8 @@ module.exports.addcompany = function addcompany(req, res){
         parameters.userDetail.alt_phone_number = req.query.parameters.alt_phone_number;
     }
     if(error.status == false){
+        var activation_code = cryptoJs.SHA256(parameters, global.secret_key);
+        parameters.company.activation_code = activation_code.toString(cryptoJs.enc.Base64);
         companylib.addCompany(parameters, function(result){
             sendResponse(result, res);
         });   

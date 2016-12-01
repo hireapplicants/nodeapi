@@ -30,6 +30,7 @@ var fs = require('fs');
 var url = require('url');
 var bodyParser = require('body-parser');
 var app = express();
+global.secret_key = 'hireapplicant@api';
 app.use(session({'secret':'secure@api',
     proxy: true,
     resave: true,
