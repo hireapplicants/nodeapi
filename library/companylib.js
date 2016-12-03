@@ -23,4 +23,27 @@ module.exports.getCompanyList = function(data, cb){
     companyModel.getCompanyList(data, function(companyList){
         cb(companyList);
     });
+};
+
+module.exports.saveEmailTemplate = function(data, cb){
+    companyModel.saveEmailTemplate(data, function(saveemail){
+        cb(saveemail);
+    });
+};
+
+module.exports.getTemplateList = function(data , cb){
+    companyModel.getTemplateList(data , function(getTemplate){
+        cb(getTemplate);
+    });
 }
+module.exports.deleteEmailTemplate = function(data , cb){
+    companyModel.deleteEmailTemplate(data , function(deleteTeplate){
+        cb(deleteTeplate);
+    });
+};
+
+module.exports.editEmailTemplate = function(data , cb){
+    companyModel.editEmailTemplate(data , function(editEmailTemplate){
+        cb(editEmailTemplate);
+    });
+};

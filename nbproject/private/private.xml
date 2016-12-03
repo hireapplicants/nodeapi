@@ -3,11 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/wamp/www/nodeapi/library/companylib.js</file>
-            <file>file:/D:/wamp/www/nodeapi/model/companymodel.js</file>
-            <file>file:/D:/wamp/www/nodeapi/entity/company.js</file>
-            <file>file:/D:/wamp/www/nodeapi/router/controller/companycontroller.js</file>
-            <file>file:/D:/wamp/www/nodeapi/db/mysql.js</file>
+            <file>file:/C:/wamp/www/nodeapi/index.js</file>
+            <file>file:/C:/wamp/www/nodeapi/library/companylib.js</file>
+            <file>file:/C:/wamp/www/nodeapi/entity/company.js</file>
+            <file>file:/C:/wamp/www/nodeapi/model/companymodel.js</file>
+            <file>file:/C:/wamp/www/nodeapi/router/controller/usercontroller.js</file>
+            <file>file:/C:/wamp/www/nodeapi/entity/user.js</file>
+            <file>file:/C:/wamp/www/nodeapi/router/controller/companycontroller.js</file>
         </group>
     </open-files>
 </project-private>

@@ -109,6 +109,74 @@ module.exports.getCompanyList = function(parameters, cb) {
             queryData[identifiers++] = parameters.status;            
         }
     }    
+       mysqlDb.dbQuery(query, queryData, function(result){
+        var response = {};
+        response.status = false;
+        if(result.length){
+            response.status = true;
+            response.data = result;
+            cb(response);
+        }else{
+            cb(response);
+        }
+    }); 
+};
+
+module.exports.deleteEmailTemplate = function(parameters , cb){
+    var query = '';
+    var identifiers = 0;
+    var queryData = [];
+    query += 'delete from email_template where id =?';
+    queryData[identifiers] = parameters.id;
+    mysqlDb.dbQuery(query, queryData, function(result){
+            var response = {};
+            response.status = true;
+            cb(response);
+    }); 
+};
+module.exports.editEmailTemplate = function(parameters , cb){
+    var query = '';
+    var identifiers = 0;
+    var queryData = [];
+    query += 'select * from email_template where id =?';
+    queryData[identifiers] = parameters.id;
+    mysqlDb.dbQuery(query, queryData, function(result){
+            var response = {};
+            response.status = true;
+            if(result.length){
+            response.status = true;
+            response.data = result;
+            cb(response);
+            }else{
+                cb(response);
+            }
+    }); 
+};
+module.exports.saveEmailTemplate = function(parameters, cb) {
+    var query = '';
+    var queryData = parameters.emailDetails;
+    query += 'INSERT INTO email_template set ?';
+    mysqlDb.dbQuery(query, queryData, function(result){
+        var response = {};
+        response.status = false;
+        if(result.insertId != undefined && result.insertId>0){
+            response.status = true;
+            response.msg = 'Email template added successfully';
+            cb(response);
+        }else{
+            cb(response);
+        }
+        });
+}
+module.exports.getTemplateList = function(parameters , cb){
+    var query = '';
+    var identifiers = 0;
+    var queryData = [];
+    query += 'select * from email_template';
+    if(parameters.type !=undefined && parameters.type>0){
+        query += ' Where type=?';
+        queryData[identifiers] = parameters.type;
+    }
     mysqlDb.dbQuery(query, queryData, function(result){
         var response = {};
         response.status = false;

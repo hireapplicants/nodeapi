@@ -21,6 +21,30 @@ module.exports.addCompany = function addCompany(data, cb){
 };
 module.exports.getCompanyList = function getCompanyList(data, cb){
     companyEntity.getCompanyList(data, function(result){
+      cb(result);
+    });
+};
+
+module.exports.editEmailTemplate = function editEmailTemplate(data , cb){
+    companyEntity.editEmailTemplate(data, function(result){
+        cb(result);
+    });
+};
+
+module.exports.saveEmailTemplate = function saveEmailTemplate(data, cb){
+    companyEntity.saveEmailTemplate(data, function(result){
+        cb(result);
+    });
+};
+
+module.exports.getTemplateList = function getTemplateList(data , cb){
+    companyEntity.getTemplateList(data, function(result){
+        cb(result);
+    });
+};
+
+module.exports.deleteEmailTemplate = function deleteEmailTemplate(data , cb){
+    companyEntity.deleteEmailTemplate(data, function(result){
         cb(result);
     });
 };

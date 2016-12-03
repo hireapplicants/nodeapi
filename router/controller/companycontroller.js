@@ -128,9 +128,97 @@ module.exports.getcompanylist = function getcompanylist(req, res){
     }    
     if(error.status == false){
         companylib.getCompanyList(parameters, function(result){
+            sendResponse(result,res);
+        });
+    }
+    else{
+        sendResponse(result,res);
+    }
+} 
+
+module.exports.saveemailtemplate = function saveemailtemplate(req, res){
+    var parameters = {};
+    parameters.emailDetails = {};
+    var error = {};
+    error.status = false;
+    req.query.parameters = req.query;
+    if(req.query.parameters.type!=undefined && req.query.parameters.type!=''){
+        parameters.emailDetails.type = req.query.parameters.type;
+    }else{
+        error.status = true;
+        error.msg = 'Email type not supplied';
+    }
+    if(req.query.parameters.nick_name!=undefined && req.query.parameters.nick_name!=''){
+        parameters.emailDetails.nick_name = req.query.parameters.nick_name;
+    }else{
+        error.status = true;
+        error.msg = 'nick name is not supplied';            
+    }
+    if(req.query.parameters.subject!=undefined && req.query.parameters.subject!=''){
+        parameters.emailDetails.subject = req.query.parameters.subject;
+    }else{
+        error.status = true;
+        error.msg = 'subject is not supplied';            
+    }
+    parameters.emailDetails.cc_mail = req.query.parameters.cc_mail;
+    parameters.emailDetails.bcc_mail = req.query.parameters.bcc_mail;
+    parameters.emailDetails.body_msg = req.query.parameters.body_msg;
+    if(error.status == false){
+        companylib.saveEmailTemplate(parameters, function(result){
+            sendResponse(result, res);
+        });   
+    }else{
+        error.status = false;
+        sendResponse(error, res);
+    }
+}
+
+module.exports.gettemplatelist = function gettemplatelist(req, res){
+    var parameters = {};
+    var error = {};
+    error.status = false;
+    if(req.query.country_id!=undefined && req.query.country_id!=''){
+        parameters.country_id = req.query.country_id;
+    }
+    if(error.status == false){
+        companylib.getTemplateList(parameters, function(result){
             sendResponse(result, res);
         });    
     } else{
         sendResponse(error, res);
     }
 }
+
+module.exports.deleteEmailTemplate = function deleteEmailTemplate(req, res){
+    var parameters = {};
+    var error = {};
+    error.status = false;
+    if(req.query.id!=undefined && req.query.id!=''){
+        parameters.id = req.query.id;
+    }
+    if(error.status == false){
+        companylib.deleteEmailTemplate(parameters, function(result){
+            sendResponse(result, res);
+        });    
+    } else{
+        sendResponse(error, res);
+    }
+}
+module.exports.editEmailTemplate = function editEmailTemplate(req, res){
+    var parameters = {};
+    var error = {};
+    error.status = false;
+    if(req.query.id!=undefined && req.query.id!=''){
+        parameters.id = req.query.id;
+    }
+    if(error.status == false){
+        companylib.editEmailTemplate(parameters, function(result){
+
+            sendResponse(result, res);
+        });    
+    } else{
+        sendResponse(error, res);
+    }
+}
+
+    
