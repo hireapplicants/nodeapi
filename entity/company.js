@@ -152,22 +152,7 @@ module.exports.editEmailTemplate = function(parameters , cb){
             }
     }); 
 };
-module.exports.saveEmailTemplate = function(parameters, cb) {
-    var query = '';
-    var queryData = parameters.emailDetails;
-    query += 'INSERT INTO email_template set ?';
-    mysqlDb.dbQuery(query, queryData, function(result){
-        var response = {};
-        response.status = false;
-        if(result.insertId != undefined && result.insertId>0){
-            response.status = true;
-            response.msg = 'Email template added successfully';
-            cb(response);
-        }else{
-            cb(response);
-        }
-        });
-}
+
 module.exports.getTemplateList = function(parameters , cb){
     var query = '';
     var identifiers = 0;
@@ -176,6 +161,27 @@ module.exports.getTemplateList = function(parameters , cb){
     if(parameters.type !=undefined && parameters.type>0){
         query += ' Where type=?';
         queryData[identifiers] = parameters.type;
+    }
+    mysqlDb.dbQuery(query, queryData, function(result){
+        var response = {};
+        response.status = false;
+        if(result.length){
+            response.status = true;
+            response.data = result;
+            cb(response);
+        }else{
+            cb(response);
+        }
+    });
+}
+module.exports.getEmailTeamplateName = function(parameters , cb){
+    var query = '';
+    var identifiers = 0;
+    var queryData = [];
+    query += 'select * from email_template_name';
+    if(parameters.role_id !=undefined && parameters.role_id>0){
+        query += ' Where role_id=?';
+        queryData[identifiers] = parameters.role_id;
     }
     mysqlDb.dbQuery(query, queryData, function(result){
         var response = {};
@@ -277,16 +283,36 @@ module.exports.addCompany = function(parameters, cb) {
 
 module.exports.saveEmailTemplate = function(parameters, cb) {
     var query = '';
-    var queryData = parameters.emailDetails;
-    query += 'INSERT INTO email_template set ?';
+    var identifiers = 0;
+    var queryData = [];
+    var queryDataForInsert = parameters.emailDetails;
+    query += 'select * from email_template';
+    if(parameters.emailDetails.company_id !=undefined ){
+        query += ' Where company_id=?';
+        queryData[identifiers] = parameters.emailDetails.company_id;
+        query += 'AND type=?';
+        identifiers++;
+        queryData[identifiers] = parameters.emailDetails.type;
+    }
     mysqlDb.dbQuery(query, queryData, function(result){
-        var response = {};
-        response.status = false;
-        if(result.insertId != undefined && result.insertId>0){
-            response.status = true;
-            response.msg = 'Email template added successfully';
-            cb(response);
+        if(result.length == 0){
+            query = '';
+            query += 'INSERT INTO email_template set ?';
+            mysqlDb.dbQuery(query, queryDataForInsert, function(result){
+                var response = {};
+                response.status = false;
+                if(result.insertId){
+                    response.status = true;
+                    response.msg = 'Added Succesfully';
+                    cb(response);
+                }else{
+                    cb(response);
+                }
+            });
         }else{
+            var response = {};
+            response.status = false;
+            response.msg = 'This Email All Ready Added .';
             cb(response);
         }
         });

@@ -41,6 +41,11 @@ module.exports.deleteEmailTemplate = function(data , cb){
         cb(deleteTeplate);
     });
 };
+module.exports.getEmailTeamplateName = function(data , cb){
+    companyModel.getEmailTeamplateName(data , function(emailTeplateName){
+        cb(emailTeplateName);
+    });
+};
 
 module.exports.editEmailTemplate = function(data , cb){
     companyModel.editEmailTemplate(data , function(editEmailTemplate){
@@ -67,11 +72,7 @@ module.exports.addCompany = function(data, cb){
         cb(stateList);
     });
 };
-module.exports.saveEmailTemplate = function(data, cb){
-    companyModel.saveEmailTemplate(data, function(saveemail){
-        cb(saveemail);
-    });
-};
+
 
 module.exports.getTemplateList = function(data , cb){
     companyModel.getTemplateList(data , function(getTemplate){

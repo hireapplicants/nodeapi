@@ -148,6 +148,19 @@ module.exports.saveemailtemplate = function saveemailtemplate(req, res){
         error.status = true;
         error.msg = 'Email type not supplied';
     }
+    if(req.query.parameters.company_id!=undefined && req.query.parameters.company_id!=''){
+        parameters.emailDetails.company_id = req.query.parameters.company_id;
+    }else{
+        error.status = true;
+        error.msg = 'Company Id not supplied';
+    }
+    if(req.query.parameters.role_id!=undefined && req.query.parameters.role_id!=''){
+        parameters.emailDetails.role_id = req.query.parameters.role_id;
+    }else{
+        error.status = true;
+        error.msg = 'Role Id not supplied';
+    }
+    
     if(req.query.parameters.nick_name!=undefined && req.query.parameters.nick_name!=''){
         parameters.emailDetails.nick_name = req.query.parameters.nick_name;
     }else{
@@ -182,6 +195,21 @@ module.exports.gettemplatelist = function gettemplatelist(req, res){
     }
     if(error.status == false){
         companylib.getTemplateList(parameters, function(result){
+            sendResponse(result, res);
+        });    
+    } else{
+        sendResponse(error, res);
+    }
+}
+module.exports.getEmailTeamplateName = function getEmailTeamplateName(req, res){
+    var parameters = {};
+    var error = {};
+    error.status = false;
+    if(req.query.role_id!=undefined && req.query.role_id!=''){
+        parameters.role_id = req.query.role_id;
+    }
+    if(error.status == false){
+        companylib.getEmailTeamplateName(parameters, function(result){
             sendResponse(result, res);
         });    
     } else{
@@ -334,42 +362,6 @@ module.exports.addcompany = function addcompany(req, res){
     }    
 }
 
-module.exports.saveemailtemplate = function saveemailtemplate(req, res){
-    var parameters = {};
-    parameters.emailDetails = {};
-    var error = {};
-    error.status = false;
-    req.query.parameters = req.query;
-    if(req.query.parameters.type!=undefined && req.query.parameters.type!=''){
-        parameters.emailDetails.type = req.query.parameters.type;
-    }else{
-        error.status = true;
-        error.msg = 'Email type not supplied';
-    }
-    if(req.query.parameters.nick_name!=undefined && req.query.parameters.nick_name!=''){
-        parameters.emailDetails.nick_name = req.query.parameters.nick_name;
-    }else{
-        error.status = true;
-        error.msg = 'nick name is not supplied';            
-    }
-    if(req.query.parameters.subject!=undefined && req.query.parameters.subject!=''){
-        parameters.emailDetails.subject = req.query.parameters.subject;
-    }else{
-        error.status = true;
-        error.msg = 'subject is not supplied';            
-    }
-    parameters.emailDetails.cc_mail = req.query.parameters.cc_mail;
-    parameters.emailDetails.bcc_mail = req.query.parameters.bcc_mail;
-    parameters.emailDetails.body_msg = req.query.parameters.body_msg;
-    if(error.status == false){
-        companylib.saveEmailTemplate(parameters, function(result){
-            sendResponse(result, res);
-        });   
-    }else{
-        error.status = false;
-        sendResponse(error, res);
-    }
-}
 
 module.exports.gettemplatelist = function gettemplatelist(req, res){
     var parameters = {};

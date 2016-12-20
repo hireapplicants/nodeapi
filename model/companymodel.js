@@ -41,6 +41,11 @@ module.exports.getTemplateList = function getTemplateList(data , cb){
         cb(result);
     });
 };
+module.exports.getEmailTeamplateName = function getEmailTeamplateName(data , cb){
+    companyEntity.getEmailTeamplateName(data, function(result){
+        cb(result);
+    });
+};
 
 module.exports.deleteEmailTemplate = function deleteEmailTemplate(data , cb){
     companyEntity.deleteEmailTemplate(data, function(result){
