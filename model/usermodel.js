@@ -14,4 +14,9 @@ module.exports.addCompanyUsers = function(data, cb){
         cb(result);
     });
 }
+module.exports.updateUserDetail = function(data, cb){
+    userEntity.updateUserDetail(data, function(result){
+        cb(result);
+    });    
+}
 module.exports.getUserDetail = getUserDetail;

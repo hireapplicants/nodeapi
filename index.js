@@ -31,6 +31,8 @@ var url = require('url');
 var bodyParser = require('body-parser');
 var app = express();
 global.secret_key = 'hireapplicant@api';
+global.urlencode = require('urlencode');
+constant = require('./constant');
 app.use(session({'secret':'secure@api',
     proxy: true,
     resave: true,
@@ -53,10 +55,17 @@ app.get('/favicon.ico', function(req, res){
 	res.send(200);
 });
  app.get('/:controllerName/:method', function(req, res){
-	console.log(req.params.controllerName);
 	var controller = require('./router/controller/'+req.params.controllerName+".js");	
 	var methodName = req.params.method;
-	eval("controller."+methodName)(req, res);
+        console.log(typeof eval("controller."+methodName));
+        if(typeof eval("controller."+methodName)== 'undefined'){
+            var error = {};
+            error.status = false;
+            error.msg = 'No Method found';            
+           res.send(error);
+        }else{
+            eval("controller."+methodName)(req, res);
+        }
 		
 }); 
 

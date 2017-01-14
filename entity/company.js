@@ -56,7 +56,6 @@ module.exports.priceSave = function(parameters, cb) {
     query += 'INSERT INTO service_price_master set ?';
     mysqlDb.dbQuery(query, queryData, function(result){
         var response = {};
-        console.log(result);
         response.status = false;
         if(result.insertId){
             response.status = true;
@@ -90,7 +89,7 @@ module.exports.getCompanyList = function(parameters, cb) {
     var query = '';
     var identifiers = 0;
     var queryData = [];
-    var columns = ['company_master.id', 'company_master.company_name', 'company_master.company_url', 'company_master.address', 'company_master.zip_code','company_master.type', 'company_master.contact_via', 'company_master.time_to_contact', 'company_master.status', 'user_master.email', 'user_master.phone_number', 'user_master.alt_phone_number', 'country_master.country_name', 'state_master.state_name'];
+    var columns = ['company_master.id', 'company_master.company_name', 'company_master.company_url', 'company_master.address', 'company_master.zip_code','company_master.type', 'company_master.contact_via', 'company_master.time_to_contact', 'company_master.activation_code', 'company_master.status', 'user_master.email', 'user_master.phone_number', 'user_master.alt_phone_number', 'country_master.country_name', 'state_master.state_name'];
     query += 'select ?? from company_master ';
     queryData[identifiers++] = columns;
     query += 'LEFT JOIN user_master ON company_master.id=user_master.company_id ';
@@ -99,20 +98,21 @@ module.exports.getCompanyList = function(parameters, cb) {
     if(parameters.company_id != undefined){
         query += ' Where company_master.id=?';
         queryData[identifiers++] = parameters.company_id;
-    }    
+    }        
     if(parameters.status != undefined){
-        if(parameters.company_id != undefined){
-            query += ' AND company_master.status=?';
-            queryData[identifiers++] = parameters.status;
-        }else{
-            query += ' WHERE company_master.status=?';
-            queryData[identifiers++] = parameters.status;            
-        }
-    }    
+        var clause = (identifiers>1)?' AND ':' WHERE ';
+        query += clause+' company_master.status=?';
+        queryData[identifiers++] = parameters.status;
+    }
+    if(parameters.activation_code != undefined){
+        var clause = (identifiers>1)?' AND ':' WHERE ';
+        query += clause+' company_master.activation_code=?';
+        queryData[identifiers++] = parameters.activation_code;
+    }
        mysqlDb.dbQuery(query, queryData, function(result){
         var response = {};
         response.status = false;
-        if(result.length){
+        if(result !=undefined && result.length){
             response.status = true;
             response.data = result;
             cb(response);
@@ -138,8 +138,15 @@ module.exports.editEmailTemplate = function(parameters , cb){
     var query = '';
     var identifiers = 0;
     var queryData = [];
-    query += 'select * from email_template where id =?';
-    queryData[identifiers] = parameters.id;
+    query += 'select * from email_template';
+    if(parameters.id != undefined){
+        query += ' Where email_template.id=?';
+        queryData[identifiers] = parameters.id;
+    }     
+    if(parameters.type != undefined){
+        query += ' Where email_template.type=?';
+        queryData[identifiers] = parameters.type;
+    }    
     mysqlDb.dbQuery(query, queryData, function(result){
             var response = {};
             response.status = true;
@@ -195,68 +202,22 @@ module.exports.getEmailTeamplateName = function(parameters , cb){
         }
     });
 }
-module.exports.getCountryList = function(parameters, cb) {
+module.exports.updateCompany = function(parameters , cb){
     var query = '';
-    var identifiers = 0;
     var queryData = [];
-    query += 'select * from country_master';
-    if(parameters.country_id !=undefined && parameters.country_id>0){
-        query += ' Where id=?';
-        queryData[identifiers] = parameters.country_id;
-    }
-    mysqlDb.dbQuery(query, queryData, function(result){
-        var response = {};
-        response.status = false;
-        if(result.length){
-            response.status = true;
-            response.data = result;
-            cb(response);
-        }else{
-            cb(response);
-        }
-    });
-}
-
-module.exports.getStateList = function(parameters, cb) {
-    var query = '';
     var identifiers = 0;
-    var queryData = [];
-    var columns = ['state_master.id', 'state_master.state_name', 'state_master.state_short_name', 'country_master.id', 'country_master.country_name'];
-    query += 'select ?? from state_master'
-    query += ' LEFT JOIN country_master on state_master.country_id=country_master.id';
-    queryData[identifiers++] = columns;
-    if(parameters.state_id !=undefined && parameters.state_id>0){
-        query +=' WHERE state_master.id=?';
-        queryData[identifiers++] = parameters.state_id;
-    }else if(parameters.country_id !=undefined && parameters.country_id>0){
-        query +=' WHERE state_master.country_id=?';
-        queryData[identifiers++] = parameters.country_id;
-    }
+    query = 'UPDATE company_master set ? ';
+    queryData[identifiers++] = parameters.fields_to_update;
+    query += ' Where ?';
+    queryData[identifiers++] = parameters.where;
     mysqlDb.dbQuery(query, queryData, function(result){
-        var response = {};
-        response.status = false;
-        if(result.length){
-            response.status = true;
-            response.data = result;
-            cb(response);
-        }else{
-            cb(response);
-        }
-    });
-}
-module.exports.priceSave = function(parameters, cb) {
-    var query = '';
-    var queryData = parameters;
-    console.log(queryData);
-    query += 'INSERT INTO service_price_master set ?';
-    mysqlDb.dbQuery(query, queryData, function(result){
-        var response = {};
         console.log(result);
+        var response = {};
         response.status = false;
-        if(result.insertId){
+        if(result.affectedRows != undefined && result.affectedRows>0){
             response.status = true;
-            response.data = result;
-            cb(response);
+            response.msg = 'data updated successfully';
+            cb(response);        
         }else{
             cb(response);
         }
@@ -317,16 +278,10 @@ module.exports.saveEmailTemplate = function(parameters, cb) {
         }
         });
 }
-
-module.exports.getTemplateList = function(parameters , cb){
+module.exports.sendMailToQueue = function(dataForMailQueue){
     var query = '';
-    var identifiers = 0;
-    var queryData = [];
-    query += 'select * from email_template';
-    if(parameters.type !=undefined && parameters.type>0){
-        query += ' Where type=?';
-        queryData[identifiers] = parameters.type;
-    }
+    var queryData = dataForMailQueue;
+    query += 'INSERT INTO mail_queue_master set ?';
     mysqlDb.dbQuery(query, queryData, function(result){
         var response = {};
         response.status = false;
@@ -337,37 +292,6 @@ module.exports.getTemplateList = function(parameters , cb){
         }else{
             cb(response);
         }
-    }); 
-};
-
-module.exports.deleteEmailTemplate = function(parameters , cb){
-    var query = '';
-    var identifiers = 0;
-    var queryData = [];
-    query += 'delete from email_template where id =?';
-    queryData[identifiers] = parameters.id;
-    mysqlDb.dbQuery(query, queryData, function(result){
-            var response = {};
-            response.status = true;
-            cb(response);
-    }); 
-};
-module.exports.editEmailTemplate = function(parameters , cb){
-    var query = '';
-    var identifiers = 0;
-    var queryData = [];
-    query += 'select * from email_template where id =?';
-    queryData[identifiers] = parameters.id;
-    mysqlDb.dbQuery(query, queryData, function(result){
-            var response = {};
-            response.status = true;
-            if(result.length){
-            response.status = true;
-            response.data = result;
-            cb(response);
-            }else{
-                cb(response);
-            }
-    }); 
+    });    
 };
 

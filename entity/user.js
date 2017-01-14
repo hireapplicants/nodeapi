@@ -76,4 +76,25 @@ function addRole(parameters, cb){
         }   
     });    
 }
+module.exports.updateUserDetail = function(parameters , cb){
+    var query = '';
+    var queryData = [];
+    var identifiers = 0;
+    query = 'UPDATE user_master set ? ';
+    queryData[identifiers++] = parameters.fields_to_update;
+    query += ' Where ?';
+    queryData[identifiers++] = parameters.where;
+    mysqlDb.dbQuery(query, queryData, function(result){
+        console.log(result);
+        var response = {};
+        response.status = false;
+        if(result.affectedRows != undefined && result.affectedRows>0){
+            response.status = true;
+            response.msg = 'data updated successfully';
+            cb(response);
+        }else{
+            cb(response);
+        }
+    });    
+}
 module.exports.getUserDetail = getUserDetail;

@@ -4,3 +4,8 @@ module.exports.getUserDetail = function(data, cb){
         cb(userDetails);
     });
 };
+module.exports.updateUserDetail = function(data, cb){
+    userModel.updateUserDetail(data , function(result){
+        cb(result);
+    });    
+};

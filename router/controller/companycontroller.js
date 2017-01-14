@@ -1,5 +1,12 @@
 var companylib = require('../../library/companylib');
+var userlib = require('../../library/userlib');
 var cryptoJs = require('crypto-js');
+module.exports.undefined = function(){
+    var error = {};
+    error.status = false;
+    error.msg = 'company name not supplied';
+    sendResponse(error, res);
+}
 module.exports.getcountrylist = function getcountrylist(req, res){
     var parameters = {};
     var error = {};
@@ -113,6 +120,35 @@ module.exports.addcompany = function addcompany(req, res){
         sendResponse(error, res);
     }    
 }
+module.exports.updatecompany = function updatecompany(req, res){
+    var parameters = {};
+    var error = {};
+    error.status = false;
+    req.query.parameters = JSON.parse(req.query.parameters);
+    if(req.query.parameters.company!=undefined){
+        parameters.companyData = {};
+        parameters.companyData.fields_to_update = {};
+        parameters.companyData.where = {};
+        parameters.companyData.fields_to_update.activation_code = '';
+        parameters.companyData.where.activation_code = req.query.parameters.company.activation_code;        
+        companylib.updateCompany(parameters.companyData, function(result){
+            if(req.query.parameters.user!=undefined){
+                parameters = {};
+                parameters.activation_code = req.query.parameters.company.activation_code;
+                companylib.getCompanyList(parameters, function(result){
+                    parameters.userData.fields_to_update.first_name = req.query.parameters.user.first_name;
+                    parameters.userData.fields_to_update.password = req.query.parameters.user.password;
+                    parameters.userData.where.email = result['data'][0].email;
+                    console.log(parameters.userData.where.email);
+                    userlib.updateUserDetail();
+                });
+            }else{
+                sendResponse(result,res);
+            }            
+        });        
+    }        
+};
+
 module.exports.getcompanylist = function getcompanylist(req, res){
     var parameters = {};
     var error = {};
@@ -125,6 +161,9 @@ module.exports.getcompanylist = function getcompanylist(req, res){
     }    
     if(req.query.status!=undefined && req.query.status!=''){
         parameters.status = req.query.status;
+    }    
+    if(req.query.activation_code!=undefined && req.query.activation_code!=''){
+        parameters.activation_code = req.query.activation_code;
     }    
     if(error.status == false){
         companylib.getCompanyList(parameters, function(result){
@@ -201,21 +240,6 @@ module.exports.gettemplatelist = function gettemplatelist(req, res){
         sendResponse(error, res);
     }
 }
-module.exports.getEmailTeamplateName = function getEmailTeamplateName(req, res){
-    var parameters = {};
-    var error = {};
-    error.status = false;
-    if(req.query.role_id!=undefined && req.query.role_id!=''){
-        parameters.role_id = req.query.role_id;
-    }
-    if(error.status == false){
-        companylib.getEmailTeamplateName(parameters, function(result){
-            sendResponse(result, res);
-        });    
-    } else{
-        sendResponse(error, res);
-    }
-}
 
 module.exports.deleteEmailTemplate = function deleteEmailTemplate(req, res){
     var parameters = {};
@@ -248,23 +272,7 @@ module.exports.editEmailTemplate = function editEmailTemplate(req, res){
         sendResponse(error, res);
     }
 }
-
     
-module.exports.getcountrylist = function getcountrylist(req, res){
-    var parameters = {};
-    var error = {};
-    error.status = false;
-    if(req.query.country_id!=undefined && req.query.country_id!=''){
-        parameters.country_id = req.query.country_id;
-    }
-    if(error.status == false){
-        companylib.getCountryList(parameters, function(result){
-            sendResponse(result, res);
-        });    
-    } else{
-        sendResponse(error, res);
-    }
-}
 module.exports.getstatelist = function getstatelist(req, res){
     var parameters = {};
     var error = {};
@@ -283,126 +291,29 @@ module.exports.getstatelist = function getstatelist(req, res){
         sendResponse(error, res);
     }
 }
-function sendResponse($data, res){
-    res.send($data);
-}
-module.exports.addcompany = function addcompany(req, res){
+module.exports.activateordeactivatecompany = function(req, res){
     var parameters = {};
-    parameters.company = {};
-    parameters.userDetail = {};
     var error = {};
+    parameters.fields_to_update={};
+    parameters.where = {};
     error.status = false;
-    req.query.parameters = JSON.parse(req.query.parameters);
-    if(req.query.parameters.company_name!=undefined && req.query.parameters.company_name!=''){
-        parameters.company.company_name = req.query.parameters.company_name;
-        parameters.userDetail.first_name = req.query.parameters.company_name;
+    if(req.query.company_id!=undefined && req.query.company_id>0){
+        parameters.where.id = req.query.company_id;
     }else{
-        error.status = true;
-        error.msg = 'company name not supplied';
+        error.msg = 'company id not is not supplied'; 
     }
-    if(req.query.parameters.company_url!=undefined && req.query.parameters.company_url!=''){
-        parameters.company.company_url = req.query.parameters.company_url;
+    if(req.query.status!=undefined && req.query.status!=''){
+        parameters.fields_to_update.status = req.query.status;
     }else{
-        error.status = true;
-        error.msg = 'company url is not supplied';            
-    }
-    if(req.query.parameters.country_id!=undefined && req.query.parameters.country_id!=''){
-        parameters.company.country_id = req.query.parameters.country_id;
-    }else{
-        error.status = true;
-        error.msg = 'country name is not supplied';            
-    }
-    if(req.query.parameters.state_id!=undefined && req.query.parameters.state_id!=''){
-        parameters.company.state_id = req.query.parameters.state_id;
-    }else{
-        error.status = true;
-        error.msg = 'state name is not supplied';
-    }
-    if(req.query.parameters.address!=undefined && req.query.parameters.address!=''){
-        parameters.company.address = req.query.parameters.address;
-    }else{
-        error.status = true;
-        error.msg = 'address can not be empty';            
-    }
-    if(req.query.parameters.zip_code!=undefined && req.query.parameters.zip_code!=''){
-        parameters.company.zip_code = req.query.parameters.zip_code;
-    }else{
-        error.status = true;
-        error.msg = 'zip code can not be empty';            
-    }
-    if(req.query.parameters.type!=undefined && req.query.parameters.type!=''){
-        parameters.company.type = req.query.parameters.type;
-    }
-    if(req.query.parameters.contact_via!=undefined && req.query.parameters.contact_via!=''){
-        parameters.company.contact_via = req.query.parameters.contact_via;
-    }     
-    if(req.query.parameters.email!=undefined && req.query.parameters.email!=''){
-        parameters.userDetail.email = req.query.parameters.email;
-        parameters.userDetail.username = req.query.parameters.email;
-    }else{
-        error.status = true;
-        error.msg = 'email can not be empty';            
-    }
-    if(req.query.parameters.phone_number!=undefined && req.query.parameters.phone_number!=''){
-        parameters.userDetail.phone_number = req.query.parameters.phone_number;
-    }else{
-        error.status = true;
-        error.msg = 'phone number can not be empty';            
-    }
-    if(req.query.parameters.phone_number!=undefined && req.query.parameters.phone_number!=''){
-        parameters.userDetail.alt_phone_number = req.query.parameters.alt_phone_number;
-    }
-    if(error.status == false){
-        companylib.addCompany(parameters, function(result){
-            sendResponse(result, res);
-        });   
-    }else{
-        error.status = false;
-        sendResponse(error, res);
+        error.msg = 'status not is not supplied'; 
     }    
-}
-
-
-module.exports.gettemplatelist = function gettemplatelist(req, res){
-    var parameters = {};
-    var error = {};
-    error.status = false;
-    if(req.query.country_id!=undefined && req.query.country_id!=''){
-        parameters.country_id = req.query.country_id;
-    }
+    if(req.query.activated_by!=undefined && req.query.activated_by>0){
+        parameters.fields_to_update.activated_by = req.query.activated_by;
+    }else{
+        error.msg = 'user id not is not supplied'; 
+    }    
     if(error.status == false){
-        companylib.getTemplateList(parameters, function(result){
-            sendResponse(result, res);
-        });    
-    } else{
-        sendResponse(error, res);
-    }
-}
-
-module.exports.deleteEmailTemplate = function deleteEmailTemplate(req, res){
-    var parameters = {};
-    var error = {};
-    error.status = false;
-    if(req.query.id!=undefined && req.query.id!=''){
-        parameters.id = req.query.id;
-    }
-    if(error.status == false){
-        companylib.deleteEmailTemplate(parameters, function(result){
-            sendResponse(result, res);
-        });    
-    } else{
-        sendResponse(error, res);
-    }
-}
-module.exports.editEmailTemplate = function editEmailTemplate(req, res){
-    var parameters = {};
-    var error = {};
-    error.status = false;
-    if(req.query.id!=undefined && req.query.id!=''){
-        parameters.id = req.query.id;
-    }
-    if(error.status == false){
-        companylib.editEmailTemplate(parameters, function(result){
+        companylib.activateOrdeactivate(parameters, function(result){
             sendResponse(result, res);
         });    
     } else{

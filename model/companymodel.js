@@ -95,3 +95,18 @@ module.exports.deleteEmailTemplate = function deleteEmailTemplate(data , cb){
         cb(result);
     });
 };
+
+module.exports.activateOrdeactivate = function activateOrdeactivate(data , cb){
+    companyEntity.updateCompany(data, function(result){
+        
+        cb(result);
+    });
+};
+module.exports.updateCompany = function(data, cb){
+    companyEntity.updateCompany(data, function(result){        
+        cb(result);
+    });    
+}
+module.exports.sendMailToQueue = function(dataForMailQueue){
+    companyEntity.sendMailToQueue(dataForMailQueue);
+};
