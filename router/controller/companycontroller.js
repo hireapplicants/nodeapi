@@ -133,6 +133,7 @@ module.exports.updatecompany = function updatecompany(req, res){
             parameters.companyData.fields_to_update = {};
             parameters.companyData.where = {};
             parameters.companyData.fields_to_update.activation_code = '';
+            parameters.companyData.fields_to_update.status = 1;
             parameters.companyData.where.activation_code = req.query.parameters.company.activation_code;        
             companylib.updateCompany(parameters.companyData, function(result){
                 if(req.query.parameters.user!=undefined){

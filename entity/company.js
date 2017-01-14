@@ -285,7 +285,7 @@ module.exports.sendMailToQueue = function(dataForMailQueue){
     mysqlDb.dbQuery(query, queryData, function(result){
         var response = {};
         response.status = false;
-        if(result.length){
+        if(result.insertId != undefined && result.insertId>0){
             response.status = true;
             response.data = result;
             cb(response);
