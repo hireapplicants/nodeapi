@@ -126,26 +126,30 @@ module.exports.updatecompany = function updatecompany(req, res){
     error.status = false;
     req.query.parameters = JSON.parse(req.query.parameters);
     if(req.query.parameters.company!=undefined){
-        parameters.companyData = {};
-        parameters.companyData.fields_to_update = {};
-        parameters.companyData.where = {};
-        parameters.companyData.fields_to_update.activation_code = '';
-        parameters.companyData.where.activation_code = req.query.parameters.company.activation_code;        
-        companylib.updateCompany(parameters.companyData, function(result){
-            if(req.query.parameters.user!=undefined){
-                parameters = {};
-                parameters.activation_code = req.query.parameters.company.activation_code;
-                companylib.getCompanyList(parameters, function(result){
+        parameters = {};
+        parameters.activation_code = req.query.parameters.company.activation_code;
+        companylib.getCompanyList(parameters, function(companyDetail){  
+            parameters.companyData = {};
+            parameters.companyData.fields_to_update = {};
+            parameters.companyData.where = {};
+            parameters.companyData.fields_to_update.activation_code = '';
+            parameters.companyData.where.activation_code = req.query.parameters.company.activation_code;        
+            companylib.updateCompany(parameters.companyData, function(result){
+                if(req.query.parameters.user!=undefined){
+                    parameters.userData = {};
+                    parameters.userData.fields_to_update = {};
+                    parameters.userData.where = {};
                     parameters.userData.fields_to_update.first_name = req.query.parameters.user.first_name;
                     parameters.userData.fields_to_update.password = req.query.parameters.user.password;
-                    parameters.userData.where.email = result['data'][0].email;
-                    console.log(parameters.userData.where.email);
-                    userlib.updateUserDetail();
-                });
-            }else{
+                    parameters.userData.where.email = companyDetail['data'][0]['email'];
+                    userlib.updateUserDetail(parameters.userData, function(){});
+                } 
                 sendResponse(result,res);
-            }            
+             });
         });        
+    } else{
+        error.msg = 'something goes wrong'; 
+        sendResponse(error,res);
     }        
 };
 
