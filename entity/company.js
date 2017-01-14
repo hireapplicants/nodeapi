@@ -282,16 +282,6 @@ module.exports.sendMailToQueue = function(dataForMailQueue){
     var query = '';
     var queryData = dataForMailQueue;
     query += 'INSERT INTO mail_queue_master set ?';
-    mysqlDb.dbQuery(query, queryData, function(result){
-        var response = {};
-        response.status = false;
-        if(result.insertId != undefined && result.insertId>0){
-            response.status = true;
-            response.data = result;
-            cb(response);
-        }else{
-            cb(response);
-        }
-    });    
+    mysqlDb.dbQuery(query, queryData, function(result){});    
 };
 
