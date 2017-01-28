@@ -29,9 +29,31 @@ var getUserDetail = function(data, cb) {
     var identifiers = 0;
     var queryData = [];
     var columns = [];
-    query += 'select * from user_master where username=? AND password=?';
-    queryData[identifiers++] = data.username;
-    queryData[identifiers++] = data.password;
+    query += 'select * from user_master';
+    if(data.username != undefined){
+        query += " where username=? ";
+        queryData[identifiers++] = data.username;
+    }
+    if(data.password != undefined){
+        var clause = (identifiers>0)?' AND ':' WHERE ';
+        query += clause+' password=?';
+        queryData[identifiers++] = data.password;
+    }
+    if(data.id != undefined){
+        var clause = (identifiers>0)?' AND ':' WHERE ';
+        query += clause+' id=?';
+        queryData[identifiers++] = data.id;
+    }
+    if(data.email != undefined){
+        var clause = (identifiers>0)?' AND ':' WHERE ';
+        query += clause+' email=?';
+        queryData[identifiers++] = data.email;
+    }
+    if(data.company_id != undefined){
+        var clause = (identifiers>0)?' AND ':' WHERE ';
+        query += clause+' company_id=?';        
+        queryData[identifiers++] = data.company_id;
+    }
     mysqlDb.dbQuery(query, queryData, function(result){
         var response = {};
         response.status = false;
@@ -111,10 +133,23 @@ module.exports.userRoleList = function(userIds, cb){
         if(result.length){
             response.status = true;
             response.data = result;
-            cb(response);
+            prepareRoleData(response, cb);
         }else{
             cb(response);
         }
     });    
 }
+function prepareRoleData(response, cb){
+    var result = {};
+    result.data = {};
+    result.status = true;
+    for(var i=0; i<response.data.length; i++){
+        if(result.data[response.data[i].user_id] == undefined){
+            result.data[response.data[i].user_id] = [];
+        }
+        result.data[response.data[i].user_id].push(response.data[i].role_id);
+    }
+    cb(result);
+}
+
 module.exports.getUserDetail = getUserDetail;
