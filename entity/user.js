@@ -97,4 +97,24 @@ module.exports.updateUserDetail = function(parameters , cb){
         }
     });    
 }
+module.exports.userRoleList = function(userIds, cb){
+    var query = '';
+    var identifiers = 0;
+    var queryData = [];
+    var columns = ['urm.user_id', 'urm.role_id'];
+    query += 'select ?? from user_role_mapping urm LEFT JOIN role_master rm ON urm.role_id=rm.id where urm.user_id IN(?)';     
+    queryData[identifiers++] = columns;
+    queryData[identifiers++] = userIds;
+    mysqlDb.dbQuery(query, queryData, function(result){
+        var response = {};
+        response.status = false;
+        if(result.length){
+            response.status = true;
+            response.data = result;
+            cb(response);
+        }else{
+            cb(response);
+        }
+    });    
+}
 module.exports.getUserDetail = getUserDetail;
