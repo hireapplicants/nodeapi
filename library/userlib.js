@@ -9,3 +9,9 @@ module.exports.updateUserDetail = function(data, cb){
         cb(result);
     });    
 };
+
+module.exports.deleteUser = function(data, cb){
+    userModel.deleteUser(data , function(result){
+        cb(result);
+    });    
+};

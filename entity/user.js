@@ -152,4 +152,25 @@ function prepareRoleData(response, cb){
     cb(result);
 }
 
+module.exports.deleteUser = function(parameters , cb){
+    var query = '';
+    var queryData = [];
+    var identifiers = 0;
+    query = 'DELETE FROM user_master';
+    query += ' Where id=?';
+    queryData[identifiers++] = parameters.id;
+    mysqlDb.dbQuery(query, queryData, function(result){
+        console.log(result);
+        var response = {};
+        response.status = false;
+        if(result.affectedRows != undefined && result.affectedRows>0){
+            response.status = true;
+            response.msg = 'data Delete successfully';
+            cb(response);
+        }else{
+            cb(response);
+        }
+    });    
+}
+
 module.exports.getUserDetail = getUserDetail;
