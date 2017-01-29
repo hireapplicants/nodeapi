@@ -32,6 +32,11 @@ module.exports.updateUserDetail = function(data, cb){
         cb(result);
     });    
 }
+module.exports.deleteUser = function(data, cb){
+    userEntity.deleteUser(data, function(result){
+        cb(result);
+    });    
+}
 
 function multipleParrallelCall(index, cb){
     call++;

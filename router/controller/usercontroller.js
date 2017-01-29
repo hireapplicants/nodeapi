@@ -46,6 +46,26 @@ module.exports.getUserDetails = function getUserDetails(req, res){
         sendResponse(error, res);
     }
 }
+module.exports.deleteUser = function deleteUser(req, res){
+    var parameters = {};
+    var error = {};
+    error.status = false;
+    var parameters = {};
+    if(req.query.id == undefined || parameters.id ==''){
+        error.status = true;
+        error.msg = 'User id is required';
+    }else {
+        parameters.id = req.query.id;
+    }
+    
+    if(error.status == false){
+        userlib.deleteUser(parameters, function(result){
+            sendResponse(result, res);
+        });    
+    } else{
+        sendResponse(error, res);
+    }
+}
 function sendResponse($data, res){
     res.send($data);
 }
