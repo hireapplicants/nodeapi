@@ -110,3 +110,8 @@ module.exports.updateCompany = function(data, cb){
 module.exports.sendMailToQueue = function(dataForMailQueue){
     companyEntity.sendMailToQueue(dataForMailQueue);
 };
+module.exports.getServicelist = function getServicelist( cb){
+    companyEntity.getServicelist(function(result){
+        cb(result);
+    });
+};

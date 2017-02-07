@@ -285,3 +285,20 @@ module.exports.sendMailToQueue = function(dataForMailQueue){
     mysqlDb.dbQuery(query, queryData, function(result){});    
 };
 
+module.exports.getServicelist = function(cb) {
+    var query = '';
+    var identifiers = 0;
+    var queryData = [];
+    query += 'select * from user_master';
+    mysqlDb.dbQuery(query, queryData, function(result){
+        var response = {};
+        response.status = false;
+        if(result.length){
+            response.status = true;
+            response.data = result;
+            cb(response);
+        }else{
+            cb(response);
+        }
+    });
+}
