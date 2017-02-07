@@ -97,3 +97,8 @@ function replaceKeyFromMsg(msg, templateData, cb){
     }
     cb(msg);
 }
+module.exports.getServicelist = function(cb){
+    companyModel.getServicelist(function(serviceList){
+        cb(serviceList);
+    });
+};

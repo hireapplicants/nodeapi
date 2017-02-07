@@ -325,3 +325,16 @@ module.exports.activateordeactivatecompany = function(req, res){
         sendResponse(error, res);
     }
 }
+module.exports.getServicelist = function getServicelist(req, res){
+    var parameters = {};
+    var error = {};
+    error.status = false;
+
+    if(error.status == false){
+        companylib.getServicelist( function(result){
+            sendResponse(result, res);
+        });    
+    } else{
+        sendResponse(error, res);
+    }
+}
