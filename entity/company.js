@@ -289,7 +289,7 @@ module.exports.getServicelist = function(cb) {
     var query = '';
     var identifiers = 0;
     var queryData = [];
-    query += 'select * from user_master';
+    query += 'select service_master.id as service_id, service_master.service_name,service_master.type, service_master.created_date, subscription_detail.unit, subscription_detail.validity_days, subscription_detail.price from service_master LEFT JOIN subscription_detail ON service_master.id=subscription_detail.service_id where 1';
     mysqlDb.dbQuery(query, queryData, function(result){
         var response = {};
         response.status = false;

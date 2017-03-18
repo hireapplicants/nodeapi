@@ -28,33 +28,36 @@ var getUserDetail = function(data, cb) {
     var query = '';
     var identifiers = 0;
     var queryData = [];
-    var columns = [];
-    query += 'select * from user_master';
+    var columns = ['user_master.id', 'user_master.first_name', 'user_master.last_name', 'user_master.username', 'user_master.email', 'user_master.password', 'user_master.phone_number', 'user_master.company_id', 'ssv.expire_validity'];
+    query += 'select ?? from user_master';
+    queryData[identifiers++] = columns;    
+    query += ' LEFT JOIN service_subscription_validity as ssv on ssv.company_id=user_master.company_id AND ssv.service_id=1';
     if(data.username != undefined){
-        query += " where username=? ";
+        query += " where user_master.username=? ";
         queryData[identifiers++] = data.username;
     }
     if(data.password != undefined){
         var clause = (identifiers>0)?' AND ':' WHERE ';
-        query += clause+' password=?';
+        query += clause+' user_master.password=?';
         queryData[identifiers++] = data.password;
     }
     if(data.id != undefined){
         var clause = (identifiers>0)?' AND ':' WHERE ';
-        query += clause+' id=?';
+        query += clause+' user_master.id=?';
         queryData[identifiers++] = data.id;
     }
     if(data.email != undefined){
         var clause = (identifiers>0)?' AND ':' WHERE ';
-        query += clause+' email=?';
+        query += clause+' user_master.email=?';
         queryData[identifiers++] = data.email;
     }
     if(data.company_id != undefined){
         var clause = (identifiers>0)?' AND ':' WHERE ';
-        query += clause+' company_id=?';        
+        query += clause+' user_master.company_id=?';        
         queryData[identifiers++] = data.company_id;
     }
     mysqlDb.dbQuery(query, queryData, function(result){
+        console.log(result);
         var response = {};
         response.status = false;
         if(result.length){
