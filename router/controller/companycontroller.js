@@ -325,15 +325,84 @@ module.exports.activateordeactivatecompany = function(req, res){
         sendResponse(error, res);
     }
 }
-module.exports.getServicelist = function getServicelist(req, res){
+module.exports.getServicelist = function(req, res){
     var parameters = {};
     var error = {};
     error.status = false;
 
     if(error.status == false){
-        companylib.getServicelist( function(result){
+        companylib.getServicelist(parameters, function(result){
             sendResponse(result, res);
         });    
+    } else{
+        sendResponse(error, res);
+    }
+}
+module.exports.addToCart = function addToCart(req, res){
+    var parameters = {};
+    var error = {};
+    error.status = false;
+    parameters.serviceToAddIntoCart = {};
+    var serviceParams = {};
+    if(req.query.company_id!=undefined && req.query.company_id>0){
+        parameters.serviceToAddIntoCart.company_id = req.query.company_id;
+    }else{
+        error.status = true;
+        error.msg = 'company id not supplied';
+    }
+    if(req.query.user_id!=undefined && req.query.user_id>0){
+        parameters.serviceToAddIntoCart.user_id = req.query.user_id;
+    }else{
+        error.status = true;
+        error.msg = 'user id is not supplied';            
+    }
+    if(req.query.service_id!=undefined && req.query.service_id>0){
+        parameters.serviceToAddIntoCart.service_id = req.query.service_id;
+        serviceParams.service_id = req.query.service_id;
+    }else{
+        error.status = true;
+        error.msg = 'service id is not supplied';            
+    }
+    if(req.query.service_detail_id != undefined && req.query.service_detail_id>0){
+        parameters.serviceToAddIntoCart.service_detail_id = req.query.service_detail_id;
+        serviceParams.service_detail_id = req.query.service_detail_id;
+    }else{
+        error.status = true;
+        error.msg = 'service id is not supplied';            
+    }
+    if(error.status == false){
+        companylib.checkServiceIntoCart(parameters.serviceToAddIntoCart, function(serviceIntoCart){     
+            console.log(serviceIntoCart);
+            console.log(parameters.serviceToAddIntoCart);
+            if(serviceIntoCart.status==false || (serviceIntoCart.data[0].service_detail_id != parameters.serviceToAddIntoCart.service_detail_id)){
+                companylib.getServicelist(serviceParams, function(serviceList){
+                    if(serviceList.status==true){
+                        if(serviceIntoCart.status==true) {
+                            parameters.fields_to_update = {};
+                            parameters.where = {};
+                            parameters.fields_to_update.service_detail_id = parameters.serviceToAddIntoCart.service_detail_id;
+                            parameters.where.service_id = parameters.serviceToAddIntoCart.service_id;
+                            parameters.where.company_id = parameters.serviceToAddIntoCart.company_id;
+                            companylib.updateToCart(parameters, function(result){
+                                sendResponse(result, res);
+                            });                            
+                        }else{
+                            companylib.addToCart(parameters.serviceToAddIntoCart, function(result){
+                                sendResponse(result, res);
+                            });
+                        }
+                    }else{
+                        error.status = true;
+                        error.msg = 'Invalid argument supplied in add to cart';
+                        sendResponse(error, res);
+                    }
+                });
+            }else{
+                error.status = true;
+                error.msg = 'Service Already added to cart';
+                sendResponse(error, res);                
+            }
+        });
     } else{
         sendResponse(error, res);
     }

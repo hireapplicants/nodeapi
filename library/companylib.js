@@ -97,8 +97,23 @@ function replaceKeyFromMsg(msg, templateData, cb){
     }
     cb(msg);
 }
-module.exports.getServicelist = function(cb){
-    companyModel.getServicelist(function(serviceList){
+module.exports.getServicelist = function(parameters, cb){
+    companyModel.getServicelist(parameters, function(serviceList){
         cb(serviceList);
+    });
+};
+module.exports.addToCart = function(parameters, cb) {
+    companyModel.addToCart(parameters, function(response){
+        cb(response);
+    });
+}
+module.exports.updateToCart = function(parameters, cb) {
+    companyModel.updateToCart(parameters, function(response){
+        cb(response);
+    });
+}
+module.exports.checkServiceIntoCart = function(parameters, cb){
+    companyModel.checkServiceIntoCart(parameters, function(result){
+        cb(result);
     });
 };

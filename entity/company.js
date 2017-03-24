@@ -52,7 +52,6 @@ module.exports.getStateList = function(parameters, cb) {
 module.exports.priceSave = function(parameters, cb) {
     var query = '';
     var queryData = parameters;
-    console.log(queryData);
     query += 'INSERT INTO service_price_master set ?';
     mysqlDb.dbQuery(query, queryData, function(result){
         var response = {};
@@ -285,11 +284,19 @@ module.exports.sendMailToQueue = function(dataForMailQueue){
     mysqlDb.dbQuery(query, queryData, function(result){});    
 };
 
-module.exports.getServicelist = function(cb) {
+module.exports.getServicelist = function(parameters, cb) {
     var query = '';
     var identifiers = 0;
     var queryData = [];
-    query += 'select service_master.id as service_id, service_master.service_name,service_master.type, service_master.created_date, subscription_detail.unit, subscription_detail.validity_days, subscription_detail.price from service_master LEFT JOIN subscription_detail ON service_master.id=subscription_detail.service_id where 1';
+    query += 'select service_master.id as service_id, service_master.service_name,service_master.type, service_master.created_date, subscription_detail.id, subscription_detail.unit, subscription_detail.validity_days, subscription_detail.price from service_master INNER JOIN subscription_detail ON service_master.id=subscription_detail.service_id ';
+    if(parameters.service_id!=undefined) {
+        query += ' WHERE service_master.id=?';
+        queryData[identifiers++] = parameters.service_id;
+    }
+    if(parameters.service_detail_id!=undefined) {
+        query += ' AND subscription_detail.id=?';
+        queryData[identifiers++] = parameters.service_detail_id;
+    }    
     mysqlDb.dbQuery(query, queryData, function(result){
         var response = {};
         response.status = false;
@@ -301,4 +308,67 @@ module.exports.getServicelist = function(cb) {
             cb(response);
         }
     });
+}
+module.exports.addToCart = function(parameters, cb){
+    var query = '';
+    var queryData = parameters;
+    query += 'INSERT INTO cart_master set ?';
+    mysqlDb.dbQuery(query, queryData, function(result){
+        var response = {};
+        response.status = false;
+        if(result.insertId){
+            response.status = true;
+            response.data = result;
+            cb(response);
+        }else{
+            cb(response);
+        }
+    });    
+}
+module.exports.updateToCart = function(parameters, cb){
+    var query = '';
+    var queryData = [];
+    var identifiers = 0;
+    query = 'UPDATE cart_master set ? ';
+    queryData[identifiers++] = parameters.fields_to_update;
+    query += ' Where company_id=?';
+    queryData[identifiers++] = parameters.where.company_id;
+    query += ' AND service_id=?';
+    queryData[identifiers++] = parameters.where.servie_id;    
+    mysqlDb.dbQuery(query, queryData, function(result){
+        console.log(result);
+        var response = {};
+        response.status = false;
+        if(result.affectedRows != undefined && result.affectedRows>0){
+            response.status = true;
+            response.msg = 'data updated successfully';
+            cb(response);        
+        }else{
+            response.msg = 'Nothing to update';
+            cb(response);
+        }
+    });    
+}
+module.exports.checkServiceIntoCart = function(parameters, cb){
+    var query = '';
+    var identifiers = 0;
+    var queryData = [];
+    query += 'SELECT * FROM cart_master WHERE';
+    query += ' cart_master.company_id=?';
+    queryData[identifiers++] = parameters.company_id;
+    if(parameters.service_id!=undefined) {
+        query += ' AND cart_master.service_id=?';
+        queryData[identifiers++] = parameters.service_id;
+    }    
+    mysqlDb.dbQuery(query, queryData, function(result){
+        var response = {};
+        response.status = false;
+        if(result.length){
+            response.status = true;
+            response.data = result;
+            cb(response);
+        }else{
+            cb(response);
+        }
+    });    
 }

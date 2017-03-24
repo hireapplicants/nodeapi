@@ -84,19 +84,19 @@ module.exports.saveEmailTemplate = function saveEmailTemplate(data, cb){
     });
 };
 
-module.exports.getTemplateList = function getTemplateList(data , cb){
+module.exports.getTemplateList = function(data , cb){
     companyEntity.getTemplateList(data, function(result){
         cb(result);
     });
 };
 
-module.exports.deleteEmailTemplate = function deleteEmailTemplate(data , cb){
+module.exports.deleteEmailTemplate = function(data , cb){
     companyEntity.deleteEmailTemplate(data, function(result){
         cb(result);
     });
 };
 
-module.exports.activateOrdeactivate = function activateOrdeactivate(data , cb){
+module.exports.activateOrdeactivate = function(data , cb){
     companyEntity.updateCompany(data, function(result){
         
         cb(result);
@@ -110,8 +110,23 @@ module.exports.updateCompany = function(data, cb){
 module.exports.sendMailToQueue = function(dataForMailQueue){
     companyEntity.sendMailToQueue(dataForMailQueue);
 };
-module.exports.getServicelist = function getServicelist( cb){
-    companyEntity.getServicelist(function(result){
-        cb(result);
+module.exports.getServicelist = function(parameters, cb){
+    companyEntity.getServicelist(parameters, function(serviceList){
+        cb(serviceList);
     });
 };
+module.exports.addToCart = function(parameters, cb){
+    companyEntity.addToCart(parameters, function(response){
+        cb(response);
+    });
+}
+module.exports.updateToCart = function(parameters, cb){
+    companyEntity.updateToCart(parameters, function(response){
+        cb(response);
+    });
+}
+module.exports.checkServiceIntoCart = function(parameters, cb){
+    companyEntity.checkServiceIntoCart(parameters, function(result){        
+        cb(result);
+    });
+}
