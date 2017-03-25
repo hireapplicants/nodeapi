@@ -130,3 +130,8 @@ module.exports.checkServiceIntoCart = function(parameters, cb){
         cb(result);
     });
 }
+module.exports.deleteServiceFromCart = function(parameters, cb){
+    companyEntity.deleteServiceFromCart(parameters, function(response){        
+        cb(response);
+    });
+}

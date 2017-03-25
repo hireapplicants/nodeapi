@@ -334,7 +334,7 @@ module.exports.updateToCart = function(parameters, cb){
     query += ' Where company_id=?';
     queryData[identifiers++] = parameters.where.company_id;
     query += ' AND service_id=?';
-    queryData[identifiers++] = parameters.where.servie_id;    
+    queryData[identifiers++] = parameters.where.service_id;    
     mysqlDb.dbQuery(query, queryData, function(result){
         console.log(result);
         var response = {};
@@ -345,6 +345,35 @@ module.exports.updateToCart = function(parameters, cb){
             cb(response);        
         }else{
             response.msg = 'Nothing to update';
+            cb(response);
+        }
+    });    
+}
+module.exports.deleteServiceFromCart = function(parameters, cb){
+    var query = '';
+    var queryData = [];
+    var identifiers = 0;
+    query = 'DELETE FROM cart_master ';
+    query += ' Where company_id=?';
+    queryData[identifiers++] = parameters.where.company_id;
+    if(parameters.where.service_id!=undefined){
+        query += ' AND service_id=?';
+        queryData[identifiers++] = parameters.where.service_id;    
+    }
+    if(parameters.where.service_detail_id!=undefined){
+        query += ' AND service_detail_id=?';
+        queryData[identifiers++] = parameters.where.service_detail_id;    
+    }    
+    mysqlDb.dbQuery(query, queryData, function(result){
+        console.log(result);
+        var response = {};
+        response.status = false;
+        if(result.affectedRows != undefined && result.affectedRows>0){
+            response.status = true;
+            response.msg = 'data deleted successfully';
+            cb(response);        
+        }else{
+            response.msg = 'Nothing to delete';
             cb(response);
         }
     });    

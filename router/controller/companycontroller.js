@@ -372,8 +372,6 @@ module.exports.addToCart = function addToCart(req, res){
     }
     if(error.status == false){
         companylib.checkServiceIntoCart(parameters.serviceToAddIntoCart, function(serviceIntoCart){     
-            console.log(serviceIntoCart);
-            console.log(parameters.serviceToAddIntoCart);
             if(serviceIntoCart.status==false || (serviceIntoCart.data[0].service_detail_id != parameters.serviceToAddIntoCart.service_detail_id)){
                 companylib.getServicelist(serviceParams, function(serviceList){
                     if(serviceList.status==true){
@@ -406,4 +404,31 @@ module.exports.addToCart = function addToCart(req, res){
     } else{
         sendResponse(error, res);
     }
+}
+module.exports.deleteServiceFromCart = function addToCart(req, res){
+    var parameters = {};
+    var error = {};
+    error.status = false;
+    parameters.where = {};
+    if(req.query.company_id!=undefined && req.query.company_id>0){
+        parameters.where.company_id = req.query.company_id;
+    }else{
+        error.status = true;
+        error.msg = 'company id not supplied';
+    }    
+    if(req.query.service_id!=undefined && req.query.service_id>0){
+        parameters.where.service_id = req.query.service_id;
+    }else{
+        error.status = true;
+        error.msg = 'service id is not supplied';            
+    }
+    if(req.query.service_detail_id != undefined && req.query.service_detail_id>0){
+        parameters.where.service_detail_id = req.query.service_detail_id;
+    }else{
+        error.status = true;
+        error.msg = 'service id is not supplied';            
+    }
+    companylib.deleteServiceFromCart(parameters, function(response){
+        sendResponse(response, res);
+    });    
 }

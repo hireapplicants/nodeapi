@@ -117,3 +117,8 @@ module.exports.checkServiceIntoCart = function(parameters, cb){
         cb(result);
     });
 };
+module.exports.deleteServiceFromCart = function(parameters, cb){
+    companyModel.deleteServiceFromCart(parameters, function(response){
+        cb(response);
+    });
+};
