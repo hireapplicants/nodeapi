@@ -7,7 +7,7 @@ module.exports.undefined = function(){
     error.msg = 'company name not supplied';
     sendResponse(error, res);
 }
-module.exports.getcountrylist = function getcountrylist(req, res){
+module.exports.getcountrylist = function(req, res){
     var parameters = {};
     var error = {};
     error.status = false;
@@ -22,7 +22,7 @@ module.exports.getcountrylist = function getcountrylist(req, res){
         sendResponse(error, res);
     }
 }
-module.exports.getstatelist = function getstatelist(req, res){
+module.exports.getstatelist = function(req, res){
     var parameters = {};
     var error = {};
     error.status = false;
@@ -43,7 +43,7 @@ module.exports.getstatelist = function getstatelist(req, res){
 function sendResponse($data, res){
     res.send($data);
 }
-module.exports.addcompany = function addcompany(req, res){
+module.exports.addcompany = function(req, res){
     var parameters = {};
     parameters.company = {};
     parameters.userDetail = {};
@@ -120,7 +120,7 @@ module.exports.addcompany = function addcompany(req, res){
         sendResponse(error, res);
     }    
 }
-module.exports.updatecompany = function updatecompany(req, res){
+module.exports.updatecompany = function(req, res){
     var parameters = {};
     var error = {};
     error.status = false;
@@ -154,7 +154,7 @@ module.exports.updatecompany = function updatecompany(req, res){
     }        
 };
 
-module.exports.getcompanylist = function getcompanylist(req, res){
+module.exports.getcompanylist = function(req, res){
     var parameters = {};
     var error = {};
     error.status = false;
@@ -180,7 +180,7 @@ module.exports.getcompanylist = function getcompanylist(req, res){
     }
 } 
 
-module.exports.saveemailtemplate = function saveemailtemplate(req, res){
+module.exports.saveemailtemplate = function(req, res){
     var parameters = {};
     parameters.emailDetails = {};
     var error = {};
@@ -230,7 +230,7 @@ module.exports.saveemailtemplate = function saveemailtemplate(req, res){
     }
 }
 
-module.exports.gettemplatelist = function gettemplatelist(req, res){
+module.exports.gettemplatelist = function(req, res){
     var parameters = {};
     var error = {};
     error.status = false;
@@ -246,7 +246,7 @@ module.exports.gettemplatelist = function gettemplatelist(req, res){
     }
 }
 
-module.exports.deleteEmailTemplate = function deleteEmailTemplate(req, res){
+module.exports.deleteEmailTemplate = function(req, res){
     var parameters = {};
     var error = {};
     error.status = false;
@@ -261,7 +261,7 @@ module.exports.deleteEmailTemplate = function deleteEmailTemplate(req, res){
         sendResponse(error, res);
     }
 }
-module.exports.editEmailTemplate = function editEmailTemplate(req, res){
+module.exports.editEmailTemplate = function(req, res){
     var parameters = {};
     var error = {};
     error.status = false;
@@ -278,7 +278,7 @@ module.exports.editEmailTemplate = function editEmailTemplate(req, res){
     }
 }
     
-module.exports.getstatelist = function getstatelist(req, res){
+module.exports.getstatelist = function(req, res){
     var parameters = {};
     var error = {};
     error.status = false;
@@ -338,7 +338,7 @@ module.exports.getServicelist = function(req, res){
         sendResponse(error, res);
     }
 }
-module.exports.addToCart = function addToCart(req, res){
+module.exports.addToCart = function(req, res){
     var parameters = {};
     var error = {};
     error.status = false;
@@ -405,7 +405,7 @@ module.exports.addToCart = function addToCart(req, res){
         sendResponse(error, res);
     }
 }
-module.exports.deleteServiceFromCart = function addToCart(req, res){
+module.exports.deleteServiceFromCart = function(req, res){
     var parameters = {};
     var error = {};
     error.status = false;
@@ -428,7 +428,74 @@ module.exports.deleteServiceFromCart = function addToCart(req, res){
         error.status = true;
         error.msg = 'service id is not supplied';            
     }
-    companylib.deleteServiceFromCart(parameters, function(response){
-        sendResponse(response, res);
-    });    
+    if(error.status == false){       
+        companylib.deleteServiceFromCart(parameters, function(response){
+            sendResponse(response, res);
+        });
+    }else{
+        sendResponse(error, res);
+    }
+}
+module.exports.applyCoupon = function (req, res){
+    var parameters = {};
+    var error = {};
+    error.status = false;
+    parameters.where = {};
+    if(req.query.company_id!=undefined && req.query.company_id>0){
+        parameters.where.company_id = req.query.company_id;
+    }else{
+        error.status = true;
+        error.msg = 'company id not supplied';
+    }    
+    if(req.query.coupon_code!=undefined){
+        parameters.where.coupon_code = req.query.coupon_code;
+    }else{
+        error.status = true;
+        error.msg = 'coupon code not supplied';
+    }
+    if(error.status == false){       
+        parameters.servcieDetails = true;
+        companylib.getCouponList(parameters, function(response){   
+            if(response.status==true){
+                var addCoupon ={};
+                addCoupon.fieldToAdd = {};
+                addCoupon.where = {};
+                addCoupon.fieldToAdd.coupon_id = response.data.id;
+                addCoupon.fieldToAdd.company_id = req.query.company_id;
+                addCoupon.where.company_id = req.query.company_id;
+                companylib.applyCoupon(addCoupon, function(response){
+                    sendResponse(response, res);
+                });
+            }else{
+                error.status = true;
+                error.msg = 'Invalid coupon code';
+                sendResponse(error, res);
+            }
+        });     
+    }else{
+        sendResponse(error, res);
+    }    
+}
+module.exports.cartlist = function (req, res){
+    var parameters = {};
+    parameters.where = {};
+    var error = {};
+    error.status = false;    
+    if(req.query.company_id!=undefined && req.query.company_id>0){
+        parameters.company_id = req.query.company_id;
+    }else{
+        error.status = true;
+        error.msg = 'company id not supplied';
+    }  
+    if(req.query.user_id==undefined || req.query.user_id==0 || req.query.user_id==''){
+        error.status = true;
+        error.msg = 'user id is not supplied';            
+    }    
+    if(error.status == false){
+        companylib.cartlist(parameters, function(result){
+            sendResponse(result, res);
+        });    
+    } else{
+        sendResponse(error, res);
+    }    
 }

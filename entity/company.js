@@ -68,7 +68,6 @@ module.exports.priceSave = function(parameters, cb) {
 module.exports.addCompany = function(parameters, cb) {
     var query = '';
     var queryData = parameters.company;
-    console.log(queryData);
     query += 'INSERT INTO company_master set ?';
     mysqlDb.dbQuery(query, queryData, function(result){
         var response = {};
@@ -378,7 +377,7 @@ module.exports.deleteServiceFromCart = function(parameters, cb){
         }
     });    
 }
-module.exports.checkServiceIntoCart = function(parameters, cb){
+module.exports.serviceIntoCart = function(parameters, cb){
     var query = '';
     var identifiers = 0;
     var queryData = [];
@@ -399,5 +398,60 @@ module.exports.checkServiceIntoCart = function(parameters, cb){
         }else{
             cb(response);
         }
+    });    
+}
+module.exports.getCouponList = function(parameters, cb){
+    var query = '';
+    var identifiers = 0;
+    var queryData = [];
+    query += 'SELECT * FROM coupon_master ';
+    if(parameters.where.company_id != undefined) {
+        query += ' WHERE coupon_master.company_id IN(?)';
+        queryData[identifiers++] = [parameters.where.company_id,0];
+        if(parameters.where.coupon_code!=undefined) {
+            query += ' AND coupon_master.coupon_code=?';
+            queryData[identifiers++] = parameters.where.coupon_code;
+        }        
+        query += ' AND coupon_master.activation_date <=CURDATE() AND expiry_date>=CURDATE()';        
+    }    
+    mysqlDb.dbQuery(query, queryData, function(result){
+        var response = {};
+        response.status = false;
+        if(result.length){
+            response.status = true;
+            if(parameters.servcieDetails != undefined && parameters.servcieDetails == true){
+                result = result[0];
+            }
+            response.data = result;
+            cb(response);
+        }else{
+            cb(response);
+        }
+    });    
+};
+
+module.exports.applyCoupon = function(parameters, cb){
+    var query = '';
+    var queryData = [];
+    var identifiers = 0;
+    query = 'DELETE FROM applied_coupon ';
+    query += ' Where company_id=?';
+    queryData[identifiers++] = parameters.where.company_id;
+    //query += 'INSERT INTO cart_master set ?';
+    mysqlDb.dbQuery(query, queryData, function(result){
+        query = '';
+        queryData = parameters.fieldToAdd;
+        query += 'INSERT INTO applied_coupon set ?';
+        mysqlDb.dbQuery(query, queryData, function(result){
+            var response = {};
+            response.status = false;
+            if(result.insertId){
+                response.status = true;
+                response.data = result;
+                cb(response);
+            }else{
+                cb(response);
+            }            
+        });
     });    
 }

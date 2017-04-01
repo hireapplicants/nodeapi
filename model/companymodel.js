@@ -125,8 +125,8 @@ module.exports.updateToCart = function(parameters, cb){
         cb(response);
     });
 }
-module.exports.checkServiceIntoCart = function(parameters, cb){
-    companyEntity.checkServiceIntoCart(parameters, function(result){        
+module.exports.serviceIntoCart = function(parameters, cb){
+    companyEntity.serviceIntoCart(parameters, function(result){        
         cb(result);
     });
 }
@@ -135,3 +135,13 @@ module.exports.deleteServiceFromCart = function(parameters, cb){
         cb(response);
     });
 }
+module.exports.applyCoupon = function(parameters, cb){
+    companyEntity.applyCoupon(parameters, function(response){
+        cb(response);
+    });
+};
+module.exports.getCouponList = function(parameters, cb){
+    companyEntity.getCouponList(parameters, function(response){
+        cb(response);
+    });
+};

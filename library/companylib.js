@@ -113,12 +113,27 @@ module.exports.updateToCart = function(parameters, cb) {
     });
 }
 module.exports.checkServiceIntoCart = function(parameters, cb){
-    companyModel.checkServiceIntoCart(parameters, function(result){
+    companyModel.serviceIntoCart(parameters, function(result){
         cb(result);
     });
 };
 module.exports.deleteServiceFromCart = function(parameters, cb){
     companyModel.deleteServiceFromCart(parameters, function(response){
         cb(response);
+    });
+};
+module.exports.applyCoupon = function(parameters, cb){
+    companyModel.applyCoupon(parameters, function(response){
+        cb(response);
+    });
+};
+module.exports.getCouponList = function(parameters, cb){
+    companyModel.getCouponList(parameters, function(response){
+        cb(response);
+    });
+};
+module.exports.cartlist = function(parameters, cb){
+    companyModel.serviceIntoCart(parameters, function(result){
+        cb(result);
     });
 };
