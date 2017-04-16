@@ -137,3 +137,8 @@ module.exports.cartlist = function(parameters, cb){
         cb(result);
     });
 };
+module.exports.getAppliedCoupon = function(parameters, cb){
+    companyModel.getAppliedCoupon(parameters, function(result){
+        cb(result);
+    });
+};

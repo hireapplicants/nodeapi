@@ -377,16 +377,20 @@ module.exports.deleteServiceFromCart = function(parameters, cb){
         }
     });    
 }
-module.exports.serviceIntoCart = function(parameters, cb){
+module.exports.serviceIntoCart = function(parameters, cb){console.log(parameters);
     var query = '';
     var identifiers = 0;
     var queryData = [];
-    query += 'SELECT * FROM cart_master WHERE';
-    query += ' cart_master.company_id=?';
-    queryData[identifiers++] = parameters.company_id;
-    if(parameters.service_id!=undefined) {
+    query += 'SELECT * FROM cart_master ';
+    if(parameters.service_details != undefined && parameters.service_details==true){
+        query += ' INNER JOIN subscription_detail ON  subscription_detail.id=cart_master.service_detail_id';
+        query += ' INNER JOIN service_master ON service_master.id=cart_master.service_id';
+    }
+    query += ' WHERE cart_master.company_id=?';
+    queryData[identifiers++] = parameters.where.company_id;
+    if(parameters.where.service_id!=undefined) {
         query += ' AND cart_master.service_id=?';
-        queryData[identifiers++] = parameters.service_id;
+        queryData[identifiers++] = parameters.where.service_id;
     }    
     mysqlDb.dbQuery(query, queryData, function(result){
         var response = {};
@@ -453,5 +457,27 @@ module.exports.applyCoupon = function(parameters, cb){
                 cb(response);
             }            
         });
+    });    
+}
+module.exports.getAppliedCoupon = function(parameters, cb){
+    var query = '';
+    var queryData = [];
+    var identifiers = 0;
+    var columns = ['coupon_master.coupon_code', 'coupon_master.type'];
+    query += 'SELECT * FROM applied_coupon ';    
+    query += ' INNER JOIN coupon_master ON coupon_master.id = applied_coupon.coupon_id';
+    query += ' WHERE applied_coupon.company_id = ?';
+    queryData[identifiers++] = parameters.where.company_id;
+    query += ' AND coupon_master.activation_date <=CURDATE() AND coupon_master.expiry_date>=CURDATE()';
+    mysqlDb.dbQuery(query, queryData, function(result){
+        var response = {};
+        response.status = false;
+        if(result.length){
+            response.status = true;
+            response.data = result[0];
+            cb(response);
+        }else{
+            cb(response);
+        }        
     });    
 }

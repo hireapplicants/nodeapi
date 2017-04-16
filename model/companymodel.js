@@ -145,3 +145,8 @@ module.exports.getCouponList = function(parameters, cb){
         cb(response);
     });
 };
+module.exports.getAppliedCoupon = function(parameters, cb){
+    companyEntity.getAppliedCoupon(parameters, function(response){
+        cb(response);
+    });
+};

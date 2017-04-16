@@ -343,9 +343,10 @@ module.exports.addToCart = function(req, res){
     var error = {};
     error.status = false;
     parameters.serviceToAddIntoCart = {};
+    parameters.where = {};
     var serviceParams = {};
     if(req.query.company_id!=undefined && req.query.company_id>0){
-        parameters.serviceToAddIntoCart.company_id = req.query.company_id;
+        parameters.where.company_id = parameters.serviceToAddIntoCart.company_id = req.query.company_id;
     }else{
         error.status = true;
         error.msg = 'company id not supplied';
@@ -357,7 +358,7 @@ module.exports.addToCart = function(req, res){
         error.msg = 'user id is not supplied';            
     }
     if(req.query.service_id!=undefined && req.query.service_id>0){
-        parameters.serviceToAddIntoCart.service_id = req.query.service_id;
+        parameters.where.service_id = parameters.serviceToAddIntoCart.service_id = req.query.service_id;
         serviceParams.service_id = req.query.service_id;
     }else{
         error.status = true;
@@ -371,7 +372,7 @@ module.exports.addToCart = function(req, res){
         error.msg = 'service id is not supplied';            
     }
     if(error.status == false){
-        companylib.checkServiceIntoCart(parameters.serviceToAddIntoCart, function(serviceIntoCart){     
+        companylib.checkServiceIntoCart(parameters, function(serviceIntoCart){     
             if(serviceIntoCart.status==false || (serviceIntoCart.data[0].service_detail_id != parameters.serviceToAddIntoCart.service_detail_id)){
                 companylib.getServicelist(serviceParams, function(serviceList){
                     if(serviceList.status==true){
@@ -482,18 +483,28 @@ module.exports.cartlist = function (req, res){
     var error = {};
     error.status = false;    
     if(req.query.company_id!=undefined && req.query.company_id>0){
-        parameters.company_id = req.query.company_id;
+        parameters.where.company_id = req.query.company_id;
     }else{
         error.status = true;
         error.msg = 'company id not supplied';
     }  
+    parameters.service_details = true;
     if(req.query.user_id==undefined || req.query.user_id==0 || req.query.user_id==''){
         error.status = true;
-        error.msg = 'user id is not supplied';            
+        error.msg = 'user id is not supplied';       
     }    
     if(error.status == false){
         companylib.cartlist(parameters, function(result){
-            sendResponse(result, res);
+            if(result.status==false){
+                result.msg="No data found"
+                sendResponse(result, res);
+            }else{
+                var appliedCouponDetail = {};
+                companylib.getAppliedCoupon(parameters, function(couponDetail){
+                    result['applied_coupon'] = couponDetail;
+                    sendResponse(result, res);
+                });
+            }
         });    
     } else{
         sendResponse(error, res);
