@@ -406,7 +406,7 @@ module.exports.addToCart = function(req, res){
         sendResponse(error, res);
     }
 }
-module.exports.deleteServiceFromCart = function(req, res){
+module.exports.deleteServiceFromCart = function(req, res) {
     var parameters = {};
     var error = {};
     error.status = false;
@@ -465,15 +465,17 @@ module.exports.applyCoupon = function (req, res){
                 addCoupon.fieldToAdd.company_id = req.query.company_id;
                 addCoupon.where.company_id = req.query.company_id;
                 companylib.applyCoupon(addCoupon, function(response){
+                    response.msg="coupon applied successfully";
                     sendResponse(response, res);
                 });
             }else{
-                error.status = true;
+                error.status = false;
                 error.msg = 'Invalid coupon code';
                 sendResponse(error, res);
             }
         });     
     }else{
+        error.status = false;
         sendResponse(error, res);
     }    
 }
